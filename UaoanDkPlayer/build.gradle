@@ -74,7 +74,7 @@ publishing {
         maven(MavenPublication) {
             groupId = 'com.github.uaoan'
             artifactId = 'UaoanDkPlayer'
-            version = "1.0"
+            version = "1.0.2"
             pom {
                 description = 'UaoanDkPlayer'
             }

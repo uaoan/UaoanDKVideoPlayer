@@ -1,8 +1,8 @@
- 
+
 
 ### UaoanDKVideoPlayer
 
- > 二改DK播放器，内置下一集按钮、选集按钮、投屏按钮，功能菜单弹窗、竖屏全屏、倍速功能、画面比例更改、长按倍速、定时关闭软件、跳过片头、跳过片尾、小窗播放、隐藏进度条
+> 二改DK播放器，内置下一集按钮、选集按钮、投屏按钮，功能菜单弹窗、竖屏全屏、倍速功能、画面比例更改、长按倍速、定时关闭软件、跳过片头、跳过片尾、小窗播放、隐藏进度条
 
 
 
@@ -12,7 +12,7 @@
 
 
 ### 集成
- **1.在 project 的 build.gradle 文件中找到 allprojects{} 代码块添加以下代码：** 
+**1.在 project 的 build.gradle 文件中找到 allprojects{} 代码块添加以下代码：**
 
 ```
 allprojects {
@@ -23,15 +23,15 @@ allprojects {
     }
 }
 ```
- **在 app 的 build.gradle 文件中找到 dependencies{} 代码块，并在其中加入以下语句：** 
+**在 app 的 build.gradle 文件中找到 dependencies{} 代码块，并在其中加入以下语句：**
 
 ```
 implementation 'com.github.uaoan:UaoanDKVideoPlayer:1.0'
 ```
 
-###  **简单使用** 
+###  **简单使用**
 
- **添加布局** 
+**添加布局**
 
 ```
  <com.uaoanlao.player.DkPlayerView
@@ -40,7 +40,7 @@ implementation 'com.github.uaoan:UaoanDKVideoPlayer:1.0'
         android:layout_height="200dp" />
 ```
 
- **设置视频地址、控制器等** 
+**设置视频地址、控制器等**
 
 ```
 videoView.setUrl(URL); //设置视频地址
@@ -51,7 +51,7 @@ videoView.setVideoController(controller); //设置控制器
 videoView.start(); //开始播放，不调用则不自动播放
 ```
 
- **在Activity中** 
+**在Activity中**
 
 
 ```
@@ -88,7 +88,7 @@ videoView.start(); //开始播放，不调用则不自动播放
    
 ```
 
- **在AndroidManifest.xml中** 
+**在AndroidManifest.xml中**
 
 
 ```
@@ -162,7 +162,7 @@ public void complete() {
 ```
 
 ### 投屏
- **投屏使用代码** 
+**投屏使用代码**
 
 
 ```
@@ -172,14 +172,14 @@ new Screen().setStaerActivity(MainActivity.this)
             .setImageUrl("http://i0.hdslb.com/bfs/article/96fa4320db5115711c8c30afaff936910595d336.png")
             .show();
 ```
- 
- **————————————————————————————————————————————————————————————————————————** 
+
+**————————————————————————————————————————————————————————————————————————**
 
 
- ### [更多方法请点击前往 >](https://github.com/Doikki/DKVideoPlayer/wiki/API)
+### [更多方法请点击前往 >](https://github.com/Doikki/DKVideoPlayer/wiki/API)
 
 
- **————————————————————————————————————————————————————————————————————————** 
+**————————————————————————————————————————————————————————————————————————**
 
 
 
