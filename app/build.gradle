@@ -34,7 +34,8 @@ dependencies {
     implementation libs.material
     implementation libs.activity
     implementation libs.constraintlayout
-    implementation project(':UaoanDkPlayer')
+    //implementation project(':UaoanDkPlayer')
+    implementation 'com.github.uaoan:UaoanDKVideoPlayer:1.0.2'
     testImplementation libs.junit
     androidTestImplementation libs.ext.junit
     androidTestImplementation libs.espresso.core

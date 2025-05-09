@@ -26,10 +26,9 @@ allprojects {
 **在 app 的 build.gradle 文件中找到 dependencies{} 代码块，并在其中加入以下语句：**
 
 ```
-implementation 'com.github.uaoan:UaoanDKVideoPlayer:1.0.2'
+implementation 'com.github.uaoan:UaoanDKVideoPlayer:1.0.3'
 ```
 
-### 如果使用iapp导入的依赖用不了的话请手动下载aar文件   [点击下载aar文件](https://gitee.com/qiton/UaoanDKVideoPlayer/raw/master/dk.aar)
 
 
 ###  **简单使用**

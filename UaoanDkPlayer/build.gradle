@@ -48,14 +48,14 @@ android {
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(23)        // << --- ADD This
+        languageVersion = JavaLanguageVersion.of(17)        // << --- ADD This
     }
 }
 
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_23            // << --- ADD This
-    targetCompatibility = JavaVersion.VERSION_23
+    sourceCompatibility = JavaVersion.VERSION_17            // << --- ADD This
+    targetCompatibility = JavaVersion.VERSION_17
 }
 
 
@@ -74,7 +74,7 @@ publishing {
         maven(MavenPublication) {
             groupId = 'com.github.uaoan'
             artifactId = 'UaoanDkPlayer'
-            version = "1.0.2"
+            version = "1.0.3"
             pom {
                 description = 'UaoanDkPlayer'
             }

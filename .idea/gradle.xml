@@ -8,7 +8,7 @@
         <option name="distributionType" value="LOCAL" />
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
         <option name="gradleHome" value="D:\Android\gradle\gradle-8.13-bin\gradle-8.13" />
-        <option name="gradleJvm" value="corretto-23" />
+        <option name="gradleJvm" value="ms-17" />
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
