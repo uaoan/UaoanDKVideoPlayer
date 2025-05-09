@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center_horizontal|right"
+    android:id="@+id/layout">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="vertical"
+        android:layout_margin="10dp"
+        android:padding="5dp"
+        android:minWidth="200dp"
+        android:background="@drawable/round">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_margin="5dp"
+            android:gravity="center">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="跳过"
+                android:textSize="12dp"
+                android:textColor="#ffffffff"
+                android:id="@+id/title"
+                android:layout_weight="1"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="100%"
+                android:id="@+id/name"
+                android:textSize="10dp"
+                android:shadowColor="#ffffffff"
+                android:shadowDx="1"
+                android:shadowDy="1"
+                android:shadowRadius="1"
+                android:textColor="#ffffffff"/>
+        </LinearLayout>
+        <SeekBar
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:id="@+id/seekBar"
+            android:minHeight="7dp"
+            android:maxHeight="10dp"
+            android:layout_margin="5dp"
+            android:progressDrawable="@drawable/seekbar_style"/>
+    </LinearLayout>
+
+</LinearLayout>
