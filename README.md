@@ -6,7 +6,7 @@
 
 
 
-###  [DK播放器APK下载](https://github.com/uaoan/UaoanDKVideoPlayer/releases/download/1.0.0/app-release.apk)
+###  [DK播放器APK下载](https://gitee.com/qiton/UaoanDKVideoPlayer/raw/master/app-release.apk)
 
 
 
