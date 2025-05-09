@@ -29,6 +29,9 @@ allprojects {
 implementation 'com.github.uaoan:UaoanDKVideoPlayer:1.0.2'
 ```
 
+### 如果使用iapp导入的依赖用不了的话请手动下载aar文件   [点击下载aar文件](https://gitee.com/qiton/UaoanDKVideoPlayer/raw/master/dk.aar)
+
+
 ###  **简单使用**
 
 **添加布局**
