@@ -27,6 +27,7 @@ allprojects {
 
 ```
 implementation 'com.github.uaoan:UaoanDKVideoPlayer:1.0.2'
+ implementation 'xyz.doikki.android.dkplayer:dkplayer-java:3.3.7'
 ```
 
 
