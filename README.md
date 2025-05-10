@@ -26,7 +26,7 @@ allprojects {
 **在 app 的 build.gradle 文件中找到 dependencies{} 代码块，并在其中加入以下语句：**
 
 ```
-implementation 'com.github.uaoan:UaoanDKVideoPlayer:uaoan-1.0'
+ implementation 'com.github.uaoan:UaoanDKVideoPlayer:uaoan-1.0'
  implementation 'xyz.doikki.android.dkplayer:dkplayer-java:3.3.7'
 ```
 
@@ -105,6 +105,13 @@ videoView.start(); //开始播放，不调用则不自动播放
 ```
 
 
+### 添加权限
+
+```
+<uses-permission android:name="android.permission.INTERNET" />
+<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+```
+
 
 
 ### 创建接口调用类
@@ -163,9 +170,12 @@ public void complete() {
             }
         });
 ```
-
 ### 投屏
-**投屏使用代码**
+
+ **配合DLNA投屏使用**
+[DLNA投屏库](https://github.com/uaoan/UaoanDLNA) 
+
+ **投屏使用代码** 
 
 
 ```
@@ -180,6 +190,10 @@ new Screen().setStaerActivity(MainActivity.this)
 
 
 ### [更多方法请点击前往 >](https://github.com/Doikki/DKVideoPlayer/wiki/API)
+
+
+ ### 感谢
+   **[DKVideoPlayer](https://github.com/Doikki/DKVideoPlayer)** 
 
 
 **————————————————————————————————————————————————————————————————————————**
