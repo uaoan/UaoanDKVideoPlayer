@@ -26,7 +26,7 @@ allprojects {
 **在 app 的 build.gradle 文件中找到 dependencies{} 代码块，并在其中加入以下语句：**
 
 ```
-implementation 'com.github.uaoan:UaoanDKVideoPlayer:1.0.2'
+implementation 'com.github.uaoan:UaoanDKVideoPlayer:uaoan-1.0'
  implementation 'xyz.doikki.android.dkplayer:dkplayer-java:3.3.7'
 ```
 
