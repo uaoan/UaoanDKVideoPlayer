@@ -14,6 +14,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -794,100 +795,66 @@ public class DkPlayerView extends VideoView {
             // 倒计时正在运行
             linearLayout1.setVisibility(VISIBLE);
             linearLayout2.setVisibility(GONE);
+            getGlobalTimerList(recyclerView,linearLayout1,linearLayout2); //获取定时关闭的列表
         } else {
             // 倒计时未启动或已停止
             linearLayout1.setVisibility(GONE);
             linearLayout2.setVisibility(VISIBLE);
-
-            final UaoanRecyclerView uaoanRecyclerView=new UaoanRecyclerView();
-            final ArrayList<HashMap<String,Object>> arrayList=new ArrayList<>();
-            HashMap<String,Object> hashMap=new HashMap<>();
-            ArrayList<String> strings=new ArrayList<>();
-            strings.add("30分钟");
-            strings.add("60分钟");
-            strings.add("90分钟");
-            strings.add("120分钟");
-            for (int po=0;po<strings.size();po++){
-                hashMap=new HashMap<>();
-                hashMap.put("name",strings.get(po));
-                arrayList.add(hashMap);
-            }
-            uaoanRecyclerView.setAdapter(recyclerView, R.layout.speed_dialog_item, arrayList, new UaoanRecyclerView.OnRecyclerViewAdapter() {
-                @Override
-                public void bindView(UaoanRecyclerViewAdapter.ViewHolder holder, final ArrayList<HashMap<String, Object>> data, final int position) {
-                    TextView name1=holder.itemView.findViewById(R.id.title);
-
-                    name1.setText(arrayList.get(position).get("name").toString());
-                    name1.setOnClickListener(new OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            if (position==0){
-                                //30分钟
-                                CustomCountdownView.startGlobalCountdown(getActivity(), 1800000, 1000);
-                            }
-                            if (position==1){
-                                //60分钟
-                                CustomCountdownView.startGlobalCountdown(getActivity(), 3600000, 1000);
-                            }
-                            if (position==2){
-                                //90分钟
-                                CustomCountdownView.startGlobalCountdown(getActivity(), 5400000, 1000);
-                            }
-                            if (position==3){
-                                //120分钟
-                                CustomCountdownView.startGlobalCountdown(getActivity(), 7200000, 1000);
-                            }
-                            isTime=true;
-                            linearLayout1.setVisibility(VISIBLE);
-                            linearLayout2.setVisibility(GONE);
-                            uaoanRecyclerView.notifyDataSetChanged(recyclerView);
-                        }
-                    });
-                }
-            }).setLinearLayoutManager(recyclerView,getActivity());
-
+            getGlobalTimerList(recyclerView,linearLayout1,linearLayout2); //获取定时关闭的列表
 
         }
 
-
-        /*
-        final CustomSeekBar seekBar=vw.findViewById(R.id.seekBar); //拖动条
-        title.setText("定时关闭");
-        seekBar.setMax(7200000);
-        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                if (fromUser) {
-                    // 用户拖动 SeekBar 时，根据百分比设置音量
-                    progres=progress;
-                }
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-                // 开始拖动 SeekBar 时的操作
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-                // 停止拖动 SeekBar 时的操作
-                if (progres==0){
-                    CustomCountdownView.stopGlobalCountdown(getActivity());
-                }else {
-                    boolean isRunning = times.getIsCountdownStarted();
-                    if (isRunning) {
-                        // 倒计时正在运行
-                        CustomCountdownView.stopGlobalCountdown(getActivity()); //停止
-                        CustomCountdownView.startGlobalCountdown(getActivity(), progres, 1000);
-                    } else {
-                        // 倒计时未启动或已停止
-                        CustomCountdownView.startGlobalCountdown(getActivity(), progres, 1000);
-                    }
-                }
-            }
-        });*/
     }
 
+    //获取定时关闭的列表
+    private void getGlobalTimerList(RecyclerView recyclerView,LinearLayout linearLayout1,LinearLayout linearLayout2){
+        final UaoanRecyclerView uaoanRecyclerView=new UaoanRecyclerView();
+        final ArrayList<HashMap<String,Object>> arrayList=new ArrayList<>();
+        HashMap<String,Object> hashMap=new HashMap<>();
+        ArrayList<String> strings=new ArrayList<>();
+        strings.add("30分钟");
+        strings.add("60分钟");
+        strings.add("90分钟");
+        strings.add("120分钟");
+        for (int po=0;po<strings.size();po++){
+            hashMap=new HashMap<>();
+            hashMap.put("name",strings.get(po));
+            arrayList.add(hashMap);
+        }
+        uaoanRecyclerView.setAdapter(recyclerView, R.layout.speed_dialog_item, arrayList, new UaoanRecyclerView.OnRecyclerViewAdapter() {
+            @Override
+            public void bindView(UaoanRecyclerViewAdapter.ViewHolder holder, final ArrayList<HashMap<String, Object>> data, final int position) {
+                TextView name1=holder.itemView.findViewById(R.id.title);
+
+                name1.setText(arrayList.get(position).get("name").toString());
+                name1.setOnClickListener(new OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (position==0){
+                            //30分钟
+                            CustomCountdownView.startGlobalCountdown(getActivity(), 1800000, 1000);
+                        }
+                        if (position==1){
+                            //60分钟
+                            CustomCountdownView.startGlobalCountdown(getActivity(), 3600000, 1000);
+                        }
+                        if (position==2){
+                            //90分钟
+                            CustomCountdownView.startGlobalCountdown(getActivity(), 5400000, 1000);
+                        }
+                        if (position==3){
+                            //120分钟
+                            CustomCountdownView.startGlobalCountdown(getActivity(), 7200000, 1000);
+                        }
+                        isTime=true;
+                        linearLayout1.setVisibility(VISIBLE);
+                        linearLayout2.setVisibility(GONE);
+                        uaoanRecyclerView.notifyDataSetChanged(recyclerView);
+                    }
+                });
+            }
+        }).setLinearLayoutManager(recyclerView,getActivity());
+    }
     private int progres=0;
 
 }
