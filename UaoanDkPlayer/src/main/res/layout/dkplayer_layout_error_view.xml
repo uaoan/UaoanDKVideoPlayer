@@ -30,7 +30,7 @@
             android:paddingRight="18dp"
             android:paddingBottom="4dp"
             android:text="@string/dkplayer_retry"
-            android:textColor="@android:color/white" />
+            android:textColor="#3C3C3C" />
 
     </LinearLayout>
 </FrameLayout>

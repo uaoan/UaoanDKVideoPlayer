@@ -185,7 +185,7 @@ public class UaoanSharedSqlite {
         return sharedPreferences.getLong(name, 0);
     }
     public String getString(String name){
-        return sharedPreferences.getString(name, "未命名");
+        return sharedPreferences.getString(name, "null");
     }
 
     //获取全部数据

@@ -169,6 +169,40 @@ public void complete() {
 
             }
         });
+        
+
+  //设置播放器弹窗菜单项管理
+  videoView.addMenu(new DkPlayerView.addMenuProvider() {
+      @Override
+      public void Menu(ArrayList<String> addName, ArrayList<Integer> addImage, RemoveMenu menu) {
+          //添加菜单项
+          addName.add("七桐");
+          addImage.add(R.mipmap.ic_launcher);
+          addName.add("Uaoan");
+          addImage.add(R.mipmap.ic_launcher);
+                
+          //删除指定菜单
+          menu.remove("画面比例");
+      }
+
+      @Override
+      public void onClick(String name,int position,AlertDialog dialog) {
+         //设置添加的菜单项点击事件
+          if (name.equals("七桐")){
+              Toast.makeText(MainActivity.this, "点击了菜单项的： "+name, Toast.LENGTH_SHORT).show();
+              dialog.dismiss();
+          }
+          if (name.equals("Uaoan")){
+              Toast.makeText(MainActivity.this, "点击了菜单项的： "+name, Toast.LENGTH_SHORT).show();
+              dialog.dismiss();
+          }
+      }
+  });
+  
+  //设置弹窗菜单的单列显示数量（1为竖向显示，2为单列网格显示2个，3为单列网格显示3个，4以上为单列显示4个以上则只显示图标不显示文字）
+  videoView.setMenuListSize(1); 
+        
+        
 ```
 ### 投屏
 

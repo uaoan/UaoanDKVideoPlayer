@@ -8,6 +8,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.media.AudioManager;
 import android.os.Build;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.ImageView;
@@ -15,11 +16,17 @@ import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.net.TrafficStats;
+import android.os.Handler;
+import android.os.Looper;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.uaoanlao.player.List.RemoveMenu;
 import com.uaoanlao.player.List.UaoanRecyclerView;
 import com.uaoanlao.player.List.UaoanRecyclerViewAdapter;
+import com.uaoanlao.player.List.UaoanRecyclerViewMenu;
+import com.uaoanlao.player.List.UaoanRecyclerViewMenuAdapter;
 import com.uaoanlao.player.component.VodControlView;
 import com.uaoanlao.player.tool.BlurShader;
 import com.uaoanlao.player.tool.GlobalTimer.CustomCountdownView;
@@ -36,8 +43,16 @@ public class DkPlayerView extends VideoView {
     private AlertDialog.Builder dialog;
     private AlertDialog tc;
     private VolumeControl volumeControl; //音量
+    private TextView mNetworkSpeedText;
+    private Handler mNetworkSpeedHandler = new Handler(Looper.getMainLooper());
+    private Runnable mNetworkSpeedRunnable;
+    private long mLastTotalRxBytes = 0;
+    private long mLastTimeStamp = 0;
+    private boolean mShouldMonitorNetworkSpeed = false;
+    private static final int STATE_LOADING = 2; // 补充可能的加载状态常量
     public static boolean isTime=false;
     private String getVideoType="默认显示";
+    private int menuSize=3; //弹窗菜单单列显示数量
     public DkPlayerView(Context context) {
         super(context);
         init(null, 0);
@@ -177,19 +192,115 @@ public class DkPlayerView extends VideoView {
                         tc.dismiss();
                     }
                 });
-                LinearLayout linear1=vw.findViewById(R.id.line1); //画面比例
-                LinearLayout linear2=vw.findViewById(R.id.line2); //长按倍速
-                LinearLayout linear3=vw.findViewById(R.id.line3); //定时关闭
-                LinearLayout linear4=vw.findViewById(R.id.line4); //跳过片头
-                LinearLayout linear5=vw.findViewById(R.id.line5); //跳过片尾
-                LinearLayout linear6=vw.findViewById(R.id.line6); //小窗播放
-                LinearLayout linear7=vw.findViewById(R.id.line7); //底部进度条
-                ImageView bottomjd=vw.findViewById(R.id.kgImage); //底部进度条按钮
-                if (VodControlView.getBottomProgress){
-                    bottomjd.setImageResource(R.mipmap.kg2);
-                }else {
-                    bottomjd.setImageResource(R.mipmap.kg1);
+
+
+                final RecyclerView recyclerView = vw.findViewById(R.id.recycler);
+                final UaoanRecyclerViewMenu uaoanRecyclerViewMenu=new UaoanRecyclerViewMenu();
+                String[] dataName={"画面比例","长按倍速","定时关闭","跳过片头","跳过片尾","小窗播放","隐藏进度"};
+                int[] dataImage={R.mipmap.huamian,R.mipmap.longspeeds,R.mipmap.times,R.mipmap.playtop,R.mipmap.playbottom,R.mipmap.window,R.mipmap.kg1};
+
+                clearArrayList();
+                for (int i=0;dataName.length>i;i++){
+                    arrayName.add(dataName[i]);
+                    arrayImage.add(dataImage[i]);
                 }
+                if (addMenuProvider!=null){
+                    addMenuProvider.Menu(arrayName,arrayImage,new RemoveMenu()); //添加弹窗菜单项
+                }
+
+                int layout=R.layout.setup_dialog_item_1;
+                if (menuSize==1){
+                    layout=R.layout.setup_dialog_item_2;
+                }else if (menuSize>=4){
+                    layout=R.layout.setup_dialog_item_3;
+                }else{
+                    layout=R.layout.setup_dialog_item_1;
+                }
+                uaoanRecyclerViewMenu.setAdapter(recyclerView, layout, arrayName,arrayImage, new UaoanRecyclerViewMenu.OnRecyclerViewAdapter() {
+                    @Override
+                    public void bindView(UaoanRecyclerViewMenuAdapter.ViewHolder holder, ArrayList<String> dataNames,ArrayList<Integer> dataImages, int position) {
+                        final View convertView=holder.itemView;
+                        final LinearLayout linear1=convertView.findViewById(R.id.line1);
+                        final ImageView imageView=convertView.findViewById(R.id.image);
+                        final TextView title=convertView.findViewById(R.id.title);
+                        imageView.setImageResource(dataImages.get(position));
+                        title.setText(dataNames.get(position));
+                        if (dataNames.get(position).equals("隐藏进度")){
+                            if (VodControlView.getBottomProgress){
+                                imageView.setImageResource(R.mipmap.kg2);
+                            }else {
+                                imageView.setImageResource(R.mipmap.kg1);
+                            }
+                        }
+
+                        //点击事件
+                        linear1.setOnClickListener(new OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                final String name=dataNames.get(position);
+                                //画面比例
+                                if (name.equals("画面比例")){
+                                    tc.dismiss();
+                                    setScreenScale();
+                                }
+                                //长按倍速
+                                if (name.equals("长按倍速")){
+                                    tc.dismiss();
+                                    setlongSpeed();
+                                }
+                                //定时关闭
+                                if (name.equals("定时关闭")){
+                                    tc.dismiss();
+                                    setGlobalTimer();
+                                }
+                                //跳过片头
+                                if (name.equals("跳过片头")){
+                                    tc.dismiss();
+                                    setSkipTopPlayer();
+                                }
+                                //跳过片尾
+                                if (name.equals("跳过片尾")){
+                                    tc.dismiss();
+                                    setSkipBottimPlayer();
+                                }
+                                //小窗播放
+                                if (name.equals("小窗播放")){
+                                    tc.dismiss();
+                                    getActivity().enterPictureInPictureMode();
+                                    resume();
+                                }
+                                //隐藏底部进度条
+                                if (name.equals("隐藏进度")){
+                                    if (VodControlView.getBottomProgress){
+                                        VodControlView.setBottomProgress(false);
+                                        imageView.setImageResource(R.mipmap.kg1);
+                                    }else {
+                                        VodControlView.setBottomProgress(true);
+                                        imageView.setImageResource(R.mipmap.kg2);
+                                    }
+                                }
+                                if (addMenuProvider!=null){
+                                    addMenuProvider.onClick(dataNames.get(position),position,tc);
+                                }
+                            }
+                        });
+                        
+                        //长按事件
+                        linear1.setOnLongClickListener(new OnLongClickListener() {
+                            @Override
+                            public boolean onLongClick(View v) {
+                                if (dataNames.get(position).equals("隐藏进度")){
+                                    Toast.makeText(getActivity(), "隐藏底部进度条", Toast.LENGTH_SHORT).show();
+                                }
+                                return false;
+                            }
+                        });
+
+                    }
+                }).setGridLayoutManager(recyclerView,menuSize,getActivity());
+
+
+
                 //音量
                 TextView volumeText=vw.findViewById(R.id.volumeText);
                 SeekBar volumeSeekBar=vw.findViewById(R.id.volumeSeek_bar);
@@ -223,74 +334,8 @@ public class DkPlayerView extends VideoView {
                     }
                 });
 
-                //画面比例
-                linear1.setOnClickListener(new OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        tc.dismiss();
-                        setScreenScale();
-                    }
-                });
 
-                //跳过片头
-                linear4.setOnClickListener(new OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        tc.dismiss();
-                        setSkipTopPlayer();
-                    }
-                });
 
-                //跳过片尾
-                linear5.setOnClickListener(new OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        tc.dismiss();
-                        setSkipBottimPlayer();
-                    }
-                });
-
-                //定时关闭
-                linear3.setOnClickListener(new OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        tc.dismiss();
-                        setGlobalTimer();
-                    }
-                });
-
-                //长按倍速
-                linear2.setOnClickListener(new OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        tc.dismiss();
-                        setlongSpeed();
-                    }
-                });
-
-                //小窗播放
-                linear6.setOnClickListener(new OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        tc.dismiss();
-                        getActivity().enterPictureInPictureMode();
-                        resume();
-                    }
-                });
-
-                //底部进度条
-                linear7.setOnClickListener(new OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if (VodControlView.getBottomProgress){
-                            VodControlView.setBottomProgress(false);
-                            bottomjd.setImageResource(R.mipmap.kg1);
-                        }else {
-                            VodControlView.setBottomProgress(true);
-                            bottomjd.setImageResource(R.mipmap.kg2);
-                        }
-                    }
-                });
 
             }
         });
@@ -348,14 +393,88 @@ public class DkPlayerView extends VideoView {
                         }
                     }
 
-                }
-                //正在缓冲
-                if (playState==STATE_BUFFERING){
 
+                }
+                //正在播放状态
+                if (playState==STATE_PLAYING){
+                    stopNetworkSpeedMonitor();
+                    if (mNetworkSpeedText.getVisibility()==VISIBLE) {
+                        mNetworkSpeedText.setVisibility(View.GONE);
+                    }
+                }
+                
+                // 仅使用确认有效的缓冲状态
+                boolean isBufferingState = playState == STATE_BUFFERING;
+                if (isBufferingState){
+                    mShouldMonitorNetworkSpeed = true;
+                    startNetworkSpeedMonitor();
+                } else if (mShouldMonitorNetworkSpeed){
+                    //非缓冲状态但之前在监测，停止监测
+                    mShouldMonitorNetworkSpeed = false;
+                    stopNetworkSpeedMonitor();
+                    if (mNetworkSpeedText.getVisibility()==VISIBLE) {
+                        mNetworkSpeedText.setVisibility(View.GONE);
+                    }
                 }
             }
         });
 
+
+        //延迟初始化网速显示TextView，确保布局加载完成
+        post(new Runnable() {
+            @Override
+            public void run() {
+                mNetworkSpeedText = findViewById(R.id.networkSpeedText);
+                if (mNetworkSpeedText == null) {
+                }
+            }
+        });
+
+        //初始化网速监测Runnable
+        mNetworkSpeedRunnable = new Runnable() {
+            @Override
+            public void run() {
+                if (mNetworkSpeedText == null) {
+                    return;
+                }
+
+                //检查TrafficStats是否可用
+                long currentRxBytes = TrafficStats.getTotalRxBytes();
+                if (currentRxBytes == TrafficStats.UNSUPPORTED) {
+                    mNetworkSpeedText.setText("网速获取失败");
+                    mNetworkSpeedText.setVisibility(View.VISIBLE);
+                    return;
+                }
+                long currentTimeStamp = System.currentTimeMillis();
+
+                //首次运行时初始化基准值并直接显示0B/s
+                if (mLastTotalRxBytes == 0 || mLastTimeStamp == 0) {
+                    mLastTotalRxBytes = currentRxBytes;
+                    mLastTimeStamp = currentTimeStamp;
+                    mNetworkSpeedText.setText("0.0 B/s");
+                    mNetworkSpeedText.setVisibility(View.VISIBLE);
+                    mNetworkSpeedHandler.postDelayed(this, 1000);
+                    return;
+                }
+
+                if (mLastTotalRxBytes > 0 && mLastTimeStamp > 0) {
+                    long bytesDiff = currentRxBytes - mLastTotalRxBytes;
+                    long timeDiff = currentTimeStamp - mLastTimeStamp;
+
+                    if (timeDiff > 0) {
+                        long speedBytesPerSecond = (bytesDiff * 1000) / timeDiff;
+                        String speedText = formatNetworkSpeed(speedBytesPerSecond);
+                        mNetworkSpeedText.setText(speedText);
+                        mNetworkSpeedText.setVisibility(View.VISIBLE);
+                    }
+                }
+
+                mLastTotalRxBytes = currentRxBytes;
+                mLastTimeStamp = currentTimeStamp;
+
+                mNetworkSpeedHandler.postDelayed(this, 1000);
+            }
+        };
 
         //实时监听播放
         VodControlView.setOnProgressListener(new VodControlView.OnProgressListener() {
@@ -380,7 +499,52 @@ public class DkPlayerView extends VideoView {
 
             }
         });
+    }
 
+    private String formatNetworkSpeed(long bytesPerSecond) {
+        if (bytesPerSecond < 1024) {
+            return bytesPerSecond + " B/s";
+        } else if (bytesPerSecond < 1024 * 1024) {
+            return String.format("%.1f KB/s", bytesPerSecond / 1024.0f);
+        } else {
+            return String.format("%.1f MB/s", bytesPerSecond / (1024.0f * 1024.0f));
+        }
+    }
+
+    private void startNetworkSpeedMonitor() {
+        if (mNetworkSpeedHandler != null && mNetworkSpeedRunnable != null) {
+            mNetworkSpeedHandler.removeCallbacks(mNetworkSpeedRunnable);
+            // 立即显示文本框
+            if (mNetworkSpeedText != null) {
+                mNetworkSpeedText.setVisibility(View.VISIBLE);
+                mNetworkSpeedText.setText("获取网速中...");
+            }
+            mNetworkSpeedHandler.postDelayed(mNetworkSpeedRunnable, 0);
+        }
+    }
+
+    private void stopNetworkSpeedMonitor() {
+        if (mNetworkSpeedHandler != null && mNetworkSpeedRunnable != null) {
+            mNetworkSpeedHandler.removeCallbacks(mNetworkSpeedRunnable);
+        }
+    }
+
+    public static ArrayList<String> arrayName=new ArrayList<>();
+    public static ArrayList<Integer> arrayImage=new ArrayList<>();
+    //添加弹窗菜单项
+    public interface addMenuProvider{
+        void Menu(ArrayList<String> addName, ArrayList<Integer> addImage, RemoveMenu remove);
+        //void removeMenu();
+        void onClick(String name,int position,AlertDialog dialog);
+    }
+    private addMenuProvider addMenuProvider;
+    public void addMenu(addMenuProvider menu){
+        addMenuProvider=menu;
+    }
+
+    public void clearArrayList(){
+        arrayImage.clear();
+        arrayName.clear();
     }
 
     //获取当前倍速
@@ -399,6 +563,11 @@ public class DkPlayerView extends VideoView {
     public static void setLongSpeeds(float lo){
         sqlite.setFloat("longspeed",lo);
     }
+    //弹窗菜单单列显示数量
+    public void setMenuListSize(int size){
+        menuSize=size;
+    }
+
 
 
     //继续之前播放位置
@@ -856,5 +1025,8 @@ public class DkPlayerView extends VideoView {
         }).setLinearLayoutManager(recyclerView,getActivity());
     }
     private int progres=0;
+
+
+
 
 }
