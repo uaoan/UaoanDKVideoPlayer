@@ -224,6 +224,8 @@ new Screen().setStaerActivity(MainActivity.this)
 
 
 ### [更多方法请点击前往 >](https://github.com/Doikki/DKVideoPlayer/wiki/API)
+### [官方文档 >](https://github.com/Doikki/DKVideoPlayer/wiki#%E7%AE%80%E5%8D%95%E4%BD%BF%E7%94%A8)
+
 
 
  ### 感谢
