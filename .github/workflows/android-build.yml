@@ -11,6 +11,7 @@ jobs:
 
     env:
       ANDROID_SDK_ROOT: ${{ runner.temp }}/android-sdk
+      ANDROID_HOME: ${{ runner.temp }}/android-sdk
 
     steps:
       - name: Checkout repository
@@ -37,11 +38,7 @@ jobs:
           set -e
           mkdir -p $ANDROID_SDK_ROOT/cmdline-tools
           cd $ANDROID_SDK_ROOT
-          if [ "$(uname -m)" = "x86_64" ]; then
-            TOOL_URL="https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip"
-          else
-            TOOL_URL="https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip"
-          fi
+          TOOL_URL="https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip"
           curl -sSLo commandlinetools.zip $TOOL_URL
           unzip -q commandlinetools.zip -d cmdline-tools-tmp
           mkdir -p cmdline-tools/latest
@@ -64,16 +61,29 @@ jobs:
         run: chmod +x gradlew
 
       - name: Clean
-        run: ./gradlew clean --warning-mode=none
+        run: ./gradlew clean --warning-mode=none --stacktrace
 
-      - name: Assemble Release APK
-        run: ./gradlew assembleRelease --no-daemon --warning-mode=none
+      - name: Assemble Release APK (with info)
+        run: ./gradlew assembleRelease --no-daemon --warning-mode=all --info --stacktrace || true
 
       - name: List APKs
         run: ls -R app/build/outputs/apk || true
 
       - name: Upload APK artifact
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: app-release-apk
-          path: app/build/outputs/apk/release/*.apk
+          path: |
+            app/build/outputs/apk/release/*.apk
+            app/build/outputs/apk/debug/*.apk
+
+      - name: Upload build logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gradle-build-logs
+          path: |
+            build/reports/**/*.html
+            app/build/outputs/logs/**
+            **/build.log
